@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -10,6 +11,11 @@ import UserList from "./pages/UserList";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 import MainLayout from "./components/MainLayout";
+import BadgeManagement from "./pages/BadgeManagement";
+import BadgeCreate from "./pages/BadgeCreate";
+import BadgeEdit from "./pages/BadgeEdit";
+import BadgeDetails from "./pages/BadgeDetails";
+import BadgeDistribute from "./pages/BadgeDistribute";
 import { checkAuth } from "./services/authService";
 
 const queryClient = new QueryClient();
@@ -58,7 +64,47 @@ const App = () => {
                 </ProtectedRoute>
               } />
               
-              {/* Protected routes with MainLayout */}
+              {/* Badge Management routes */}
+              <Route path="/badges" element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <BadgeManagement />
+                  </MainLayout>
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/badges/create" element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <BadgeCreate />
+                  </MainLayout>
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/badges/edit/:id" element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <BadgeEdit />
+                  </MainLayout>
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/badges/details/:id" element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <BadgeDetails />
+                  </MainLayout>
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/badges/distribute/:id" element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <BadgeDistribute />
+                  </MainLayout>
+                </ProtectedRoute>
+              } />
+              
               <Route path="/tickets" element={
                 <ProtectedRoute>
                   <MainLayout>
