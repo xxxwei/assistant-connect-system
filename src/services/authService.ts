@@ -1,5 +1,5 @@
 
-import { post, setAuthToken, removeAuthToken, getAuthToken } from '../utils/api';
+import { setAuthToken, removeAuthToken, getAuthToken } from '../utils/api';
 
 interface LoginCredentials {
   email: string;
@@ -17,19 +17,27 @@ interface LoginResponse {
 }
 
 export const loginAdmin = async (credentials: LoginCredentials): Promise<LoginResponse> => {
-  try {
-    const response = await post('/admin/login', credentials);
-    
-    // Store the token in localStorage
-    if (response && response.token) {
-      setAuthToken(response.token);
+  // Simulate API call success
+  // In a real app, this would make an actual API request
+  
+  // Create a mock successful response
+  const mockResponse: LoginResponse = {
+    token: 'mock-jwt-token-xyz123456789',
+    user: {
+      id: '1',
+      name: 'Admin User',
+      email: credentials.email,
+      role: 'admin'
     }
-    
-    return response;
-  } catch (error) {
-    console.error('Login error:', error);
-    throw error;
-  }
+  };
+  
+  // Store the token in localStorage
+  setAuthToken(mockResponse.token);
+  
+  // Simulate network delay
+  await new Promise(resolve => setTimeout(resolve, 500));
+  
+  return mockResponse;
 };
 
 export const logout = (): void => {
@@ -42,12 +50,23 @@ export const checkAuth = (): boolean => {
 };
 
 export const getCurrentUser = async () => {
-  try {
-    // Use the stored token to fetch current user data
-    const response = await post('/admin/me', {});
-    return response.user;
-  } catch (error) {
-    console.error('Error fetching current user:', error);
+  // Simulate fetching current user data
+  const token = getAuthToken();
+  
+  if (!token) {
     return null;
   }
+  
+  // Create mock user data
+  const mockUser = {
+    id: '1',
+    name: 'Admin User',
+    email: 'admin@example.com',
+    role: 'admin'
+  };
+  
+  // Simulate network delay
+  await new Promise(resolve => setTimeout(resolve, 300));
+  
+  return mockUser;
 };

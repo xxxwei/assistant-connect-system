@@ -40,7 +40,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
       icon: <SettingOutlined />,
     },
     {
-      type: 'divider',
+      type: 'divider' as const,
     },
     {
       key: 'logout',
