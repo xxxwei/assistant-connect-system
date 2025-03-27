@@ -8,6 +8,7 @@ import { ConfigProvider } from 'antd';
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import UserList from "./pages/UserList";
+import UserDetails from "./pages/UserDetails";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 import MainLayout from "./components/MainLayout";
@@ -55,11 +56,19 @@ const App = () => {
                 </ProtectedRoute>
               } />
               
-              {/* User List route */}
+              {/* User routes */}
               <Route path="/users" element={
                 <ProtectedRoute>
                   <MainLayout>
                     <UserList />
+                  </MainLayout>
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/users/:id" element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <UserDetails />
                   </MainLayout>
                 </ProtectedRoute>
               } />

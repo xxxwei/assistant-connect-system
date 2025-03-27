@@ -25,3 +25,7 @@ export interface User {
   department: string;
   role: string;
 }
+
+export interface UserWithBadges extends User {
+  badges: Badge[];
+}

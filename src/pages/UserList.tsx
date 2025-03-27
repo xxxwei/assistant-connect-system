@@ -1,7 +1,7 @@
-
 import { useState } from 'react';
 import { Input, Select, Button, Card, Tag, Space } from 'antd';
-import { SearchOutlined, ReloadOutlined } from '@ant-design/icons';
+import { SearchOutlined, ReloadOutlined, EyeIcon } from '@ant-design/icons';
+import { Link } from 'react-router-dom';
 import { 
   Table,
   TableHeader,
@@ -169,12 +169,13 @@ const UserList = () => {
               <TableHead>Email</TableHead>
               <TableHead>User Type</TableHead>
               <TableHead>Status</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {paginatedUsers.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-8">
+                <TableCell colSpan={6} className="text-center py-8">
                   No users found matching your search criteria
                 </TableCell>
               </TableRow>
@@ -201,6 +202,11 @@ const UserList = () => {
                     >
                       {user.status.charAt(0).toUpperCase() + user.status.slice(1)}
                     </Tag>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Link to={`/users/${user.id}`}>
+                      <Button type="primary" size="small" icon={<EyeIcon />}>View</Button>
+                    </Link>
                   </TableCell>
                 </TableRow>
               ))
