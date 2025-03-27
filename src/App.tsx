@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -7,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ConfigProvider } from 'antd';
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import UserList from "./pages/UserList";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 import MainLayout from "./components/MainLayout";
@@ -14,7 +14,6 @@ import { checkAuth } from "./services/authService";
 
 const queryClient = new QueryClient();
 
-// Custom theme configuration for Ant Design
 const theme = {
   token: {
     colorPrimary: '#0070f3',
@@ -50,7 +49,16 @@ const App = () => {
                 </ProtectedRoute>
               } />
               
-              {/* Add more protected routes here */}
+              {/* User List route */}
+              <Route path="/users" element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <UserList />
+                  </MainLayout>
+                </ProtectedRoute>
+              } />
+              
+              {/* Protected routes with MainLayout */}
               <Route path="/tickets" element={
                 <ProtectedRoute>
                   <MainLayout>

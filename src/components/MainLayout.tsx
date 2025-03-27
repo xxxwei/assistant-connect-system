@@ -8,7 +8,8 @@ import {
   MessageOutlined,
   UserOutlined,
   SettingOutlined,
-  LogoutOutlined
+  LogoutOutlined,
+  UsergroupAddOutlined
 } from '@ant-design/icons';
 import { Link, useLocation } from 'react-router-dom';
 import { logout } from '../services/authService';
@@ -89,6 +90,11 @@ const MainLayout = ({ children }: MainLayoutProps) => {
               key: '/customers',
               icon: <UserOutlined />,
               label: <Link to="/customers">Customers</Link>,
+            },
+            {
+              key: '/users',
+              icon: <UsergroupAddOutlined />,
+              label: <Link to="/users">Users</Link>,
             },
           ]}
         />
