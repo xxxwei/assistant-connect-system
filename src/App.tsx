@@ -17,6 +17,7 @@ import BadgeCreate from "./pages/BadgeCreate";
 import BadgeEdit from "./pages/BadgeEdit";
 import BadgeDetails from "./pages/BadgeDetails";
 import BadgeDistribute from "./pages/BadgeDistribute";
+import FormMenu from "./pages/FormMenu";
 import { checkAuth } from "./services/authService";
 
 const queryClient = new QueryClient();
@@ -110,6 +111,14 @@ const App = () => {
                 <ProtectedRoute>
                   <MainLayout>
                     <BadgeDistribute />
+                  </MainLayout>
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/badges/form-menu" element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <FormMenu />
                   </MainLayout>
                 </ProtectedRoute>
               } />

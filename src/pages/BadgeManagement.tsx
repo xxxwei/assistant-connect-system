@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { Button, Input, Select, Table, Tag, Space, Card, Typography } from 'antd';
-import { PlusOutlined, SearchOutlined, EyeOutlined, EditOutlined, DeleteOutlined, SendOutlined } from '@ant-design/icons';
+import { PlusOutlined, SearchOutlined, EyeOutlined, EditOutlined, DeleteOutlined, SendOutlined, FormOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 
 const { Title } = Typography;
@@ -137,9 +137,14 @@ const BadgeManagement = () => {
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <Title level={2} className="m-0">Badge Management</Title>
-        <Link to="/badges/create">
-          <Button type="primary" icon={<PlusOutlined />}>Create Badge</Button>
-        </Link>
+        <div className="flex gap-2">
+          <Link to="/badges/create">
+            <Button type="primary" icon={<PlusOutlined />}>Create Badge</Button>
+          </Link>
+          <Link to="/badges/form-menu">
+            <Button icon={<FormOutlined />}>Form Menu</Button>
+          </Link>
+        </div>
       </div>
 
       <Card className="mb-6">
