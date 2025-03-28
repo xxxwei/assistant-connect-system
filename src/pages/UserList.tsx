@@ -1,6 +1,7 @@
+
 import { useState } from 'react';
 import { Input, Select, Button, Card, Tag, Space } from 'antd';
-import { SearchOutlined, ReloadOutlined, EyeIcon } from '@ant-design/icons';
+import { SearchOutlined, ReloadOutlined, EyeOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import { 
   Table,
@@ -205,7 +206,7 @@ const UserList = () => {
                   </TableCell>
                   <TableCell className="text-right">
                     <Link to={`/users/${user.id}`}>
-                      <Button type="primary" size="small" icon={<EyeIcon />}>View</Button>
+                      <Button type="primary" size="small" icon={<EyeOutlined />}>View</Button>
                     </Link>
                   </TableCell>
                 </TableRow>
