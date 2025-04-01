@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import {
@@ -223,7 +224,7 @@ const ConfigParamManagement = () => {
                 <SelectValue placeholder="All business lines" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All business lines</SelectItem>
+                <SelectItem value="all">All business lines</SelectItem>
                 {businessLines.map((bl) => (
                   <SelectItem key={bl.id} value={bl.id}>
                     {bl.name}
@@ -245,7 +246,7 @@ const ConfigParamManagement = () => {
                 <SelectValue placeholder="All types" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All types</SelectItem>
+                <SelectItem value="all">All types</SelectItem>
                 {uniqueTypes.map((type) => (
                   <SelectItem key={type} value={type}>
                     {type}
@@ -267,7 +268,7 @@ const ConfigParamManagement = () => {
                 <SelectValue placeholder="All keys" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All keys</SelectItem>
+                <SelectItem value="all">All keys</SelectItem>
                 {uniqueKeys.map((key) => (
                   <SelectItem key={key} value={key}>
                     {key}
