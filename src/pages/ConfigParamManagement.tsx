@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -25,7 +25,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { PencilIcon, TrashIcon, PlusIcon, FilterIcon } from "lucide-react";
+import { PencilIcon, TrashIcon, PlusIcon } from "lucide-react";
 import { mockConfigParams, mockBusinessLines, ConfigParam, BusinessLine } from '../types/configParam';
 import { useToast } from "@/components/ui/use-toast";
 
@@ -35,7 +35,6 @@ const ConfigParamManagement = () => {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [isFilterDialogOpen, setIsFilterDialogOpen] = useState(false);
   const [currentParam, setCurrentParam] = useState<ConfigParam | null>(null);
   const [newParam, setNewParam] = useState<Partial<ConfigParam>>({
     businessLineId: '',
@@ -183,22 +182,13 @@ const ConfigParamManagement = () => {
     });
   };
 
-  const handleApplyFilters = () => {
-    setIsFilterDialogOpen(false);
-    
-    toast({
-      title: "Filters Applied",
-      description: "Parameter list has been filtered according to your criteria.",
-    });
-  };
-
+  // Clear all filters
   const handleClearFilters = () => {
     setFilters({
       businessLineId: '',
       type: '',
       key: '',
     });
-    setIsFilterDialogOpen(false);
     
     toast({
       title: "Filters Cleared",
@@ -210,18 +200,88 @@ const ConfigParamManagement = () => {
     <div className="p-6 bg-white">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-light">Configuration Parameters</h1>
-        <div className="flex space-x-2">
-          <Button 
-            variant="outline" 
-            onClick={() => setIsFilterDialogOpen(true)}
-          >
-            <FilterIcon className="mr-2 h-4 w-4" />
-            Filter
-          </Button>
+        <div>
           <Button onClick={() => setIsAddDialogOpen(true)}>
             <PlusIcon className="mr-2 h-4 w-4" />
             Add Parameter
           </Button>
+        </div>
+      </div>
+
+      {/* Inline filters */}
+      <div className="bg-gray-50 p-4 rounded-md mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div>
+            <Label htmlFor="filter-businessLine" className="mb-2 block">
+              Business Line
+            </Label>
+            <Select
+              value={filters.businessLineId}
+              onValueChange={(value) => setFilters({ ...filters, businessLineId: value })}
+            >
+              <SelectTrigger id="filter-businessLine">
+                <SelectValue placeholder="All business lines" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">All business lines</SelectItem>
+                {businessLines.map((bl) => (
+                  <SelectItem key={bl.id} value={bl.id}>
+                    {bl.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div>
+            <Label htmlFor="filter-type" className="mb-2 block">
+              Type
+            </Label>
+            <Select
+              value={filters.type}
+              onValueChange={(value) => setFilters({ ...filters, type: value })}
+            >
+              <SelectTrigger id="filter-type">
+                <SelectValue placeholder="All types" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">All types</SelectItem>
+                {uniqueTypes.map((type) => (
+                  <SelectItem key={type} value={type}>
+                    {type}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div>
+            <Label htmlFor="filter-key" className="mb-2 block">
+              Key
+            </Label>
+            <Select
+              value={filters.key}
+              onValueChange={(value) => setFilters({ ...filters, key: value })}
+            >
+              <SelectTrigger id="filter-key">
+                <SelectValue placeholder="All keys" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">All keys</SelectItem>
+                {uniqueKeys.map((key) => (
+                  <SelectItem key={key} value={key}>
+                    {key}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div className="flex items-end">
+            <Button variant="outline" onClick={handleClearFilters}>
+              Clear Filters
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -305,6 +365,7 @@ const ConfigParamManagement = () => {
                 </Select>
               </div>
             </div>
+            
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="type" className="text-right">
                 Type
@@ -395,6 +456,7 @@ const ConfigParamManagement = () => {
                 </Select>
               </div>
             </div>
+            
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="edit-type" className="text-right">
                 Type
@@ -473,101 +535,6 @@ const ConfigParamManagement = () => {
             <Button variant="destructive" onClick={handleDeleteParam}>
               Delete
             </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Filter Dialog */}
-      <Dialog open={isFilterDialogOpen} onOpenChange={setIsFilterDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Filter Parameters</DialogTitle>
-            <DialogDescription>
-              Apply filters to narrow down the parameter list.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="filter-businessLine" className="text-right">
-                Business Line
-              </Label>
-              <div className="col-span-3">
-                <Select
-                  value={filters.businessLineId}
-                  onValueChange={(value) =>
-                    setFilters({ ...filters, businessLineId: value })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="All business lines" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All business lines</SelectItem>
-                    {businessLines.map((bl) => (
-                      <SelectItem key={bl.id} value={bl.id}>
-                        {bl.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="filter-type" className="text-right">
-                Type
-              </Label>
-              <div className="col-span-3">
-                <Select
-                  value={filters.type}
-                  onValueChange={(value) =>
-                    setFilters({ ...filters, type: value })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="All types" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All types</SelectItem>
-                    {uniqueTypes.map((type) => (
-                      <SelectItem key={type} value={type}>
-                        {type}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="filter-key" className="text-right">
-                Key
-              </Label>
-              <div className="col-span-3">
-                <Select
-                  value={filters.key}
-                  onValueChange={(value) =>
-                    setFilters({ ...filters, key: value })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="All keys" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All keys</SelectItem>
-                    {uniqueKeys.map((key) => (
-                      <SelectItem key={key} value={key}>
-                        {key}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </div>
-          <DialogFooter className="flex justify-between">
-            <Button variant="outline" onClick={handleClearFilters}>
-              Clear Filters
-            </Button>
-            <Button onClick={handleApplyFilters}>Apply Filters</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

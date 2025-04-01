@@ -10,7 +10,8 @@ import {
   SettingOutlined,
   LogoutOutlined,
   UsergroupAddOutlined,
-  TrophyOutlined
+  TrophyOutlined,
+  ToolOutlined
 } from '@ant-design/icons';
 import { Link, useLocation } from 'react-router-dom';
 import { logout } from '../services/authService';
@@ -101,6 +102,21 @@ const MainLayout = ({ children }: MainLayoutProps) => {
               key: '/badges',
               icon: <TrophyOutlined />,
               label: <Link to="/badges">Badges</Link>,
+            },
+            {
+              key: '/config',
+              icon: <ToolOutlined />,
+              label: 'Configuration',
+              children: [
+                {
+                  key: '/config/parameters',
+                  label: <Link to="/config/parameters">Parameters</Link>,
+                },
+                {
+                  key: '/config/business-lines',
+                  label: <Link to="/config/business-lines">Business Lines</Link>,
+                }
+              ]
             },
           ]}
         />
