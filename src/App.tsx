@@ -18,6 +18,8 @@ import BadgeEdit from "./pages/BadgeEdit";
 import BadgeDetails from "./pages/BadgeDetails";
 import BadgeDistribute from "./pages/BadgeDistribute";
 import FormMenu from "./pages/FormMenu";
+import ConfigParamManagement from "./pages/ConfigParamManagement";
+import BusinessLineManagement from "./pages/BusinessLineManagement";
 import { checkAuth } from "./services/authService";
 
 const queryClient = new QueryClient();
@@ -119,6 +121,23 @@ const App = () => {
                 <ProtectedRoute>
                   <MainLayout>
                     <FormMenu />
+                  </MainLayout>
+                </ProtectedRoute>
+              } />
+              
+              {/* Configuration Management routes */}
+              <Route path="/config/parameters" element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <ConfigParamManagement />
+                  </MainLayout>
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/config/business-lines" element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <BusinessLineManagement />
                   </MainLayout>
                 </ProtectedRoute>
               } />
