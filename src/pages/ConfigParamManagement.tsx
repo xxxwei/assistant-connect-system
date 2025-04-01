@@ -29,6 +29,7 @@ import {
 import { PencilIcon, TrashIcon, PlusIcon } from "lucide-react";
 import { mockConfigParams, mockBusinessLines, ConfigParam, BusinessLine } from '../types/configParam';
 import { useToast } from "@/components/ui/use-toast";
+import DataPagination from '@/components/common/DataPagination';
 
 const ConfigParamManagement = () => {
   const [configParams, setConfigParams] = useState<ConfigParam[]>(mockConfigParams);
@@ -48,7 +49,14 @@ const ConfigParamManagement = () => {
     type: '',
     key: '',
   });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
   const { toast } = useToast();
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filters]);
 
   // Get unique types from the config params
   const uniqueTypes = useMemo(() => {
@@ -67,12 +75,21 @@ const ConfigParamManagement = () => {
   // Filter config params based on the filter criteria
   const filteredParams = useMemo(() => {
     return configParams.filter(param => {
-      const matchBusinessLine = !filters.businessLineId || param.businessLineId === filters.businessLineId;
-      const matchType = !filters.type || param.type === filters.type;
-      const matchKey = !filters.key || param.key === filters.key;
+      const matchBusinessLine = !filters.businessLineId || filters.businessLineId === 'all' || param.businessLineId === filters.businessLineId;
+      const matchType = !filters.type || filters.type === 'all' || param.type === filters.type;
+      const matchKey = !filters.key || filters.key === 'all' || param.key === filters.key;
       return matchBusinessLine && matchType && matchKey;
     });
   }, [configParams, filters]);
+
+  // Get paginated data
+  const paginatedParams = useMemo(() => {
+    const startIndex = (currentPage - 1) * pageSize;
+    return filteredParams.slice(startIndex, startIndex + pageSize);
+  }, [filteredParams, currentPage, pageSize]);
+
+  // Calculate total pages
+  const totalPages = Math.max(1, Math.ceil(filteredParams.length / pageSize));
 
   const handleAddParam = () => {
     if (!newParam.businessLineId || !newParam.type || !newParam.key || !newParam.value) {
@@ -297,40 +314,58 @@ const ConfigParamManagement = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {filteredParams.map((param) => (
-            <TableRow key={param.id}>
-              <TableCell className="font-medium">{param.businessLineName}</TableCell>
-              <TableCell>{param.type}</TableCell>
-              <TableCell>{param.key}</TableCell>
-              <TableCell>{param.value}</TableCell>
-              <TableCell>
-                <div className="flex space-x-2">
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => {
-                      setCurrentParam(param);
-                      setIsEditDialogOpen(true);
-                    }}
-                  >
-                    <PencilIcon className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => {
-                      setCurrentParam(param);
-                      setIsDeleteDialogOpen(true);
-                    }}
-                  >
-                    <TrashIcon className="h-4 w-4" />
-                  </Button>
-                </div>
+          {paginatedParams.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={5} className="text-center py-10">
+                No parameters found matching your criteria
               </TableCell>
             </TableRow>
-          ))}
+          ) : (
+            paginatedParams.map((param) => (
+              <TableRow key={param.id}>
+                <TableCell className="font-medium">{param.businessLineName}</TableCell>
+                <TableCell>{param.type}</TableCell>
+                <TableCell>{param.key}</TableCell>
+                <TableCell>{param.value}</TableCell>
+                <TableCell>
+                  <div className="flex space-x-2">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => {
+                        setCurrentParam(param);
+                        setIsEditDialogOpen(true);
+                      }}
+                    >
+                      <PencilIcon className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => {
+                        setCurrentParam(param);
+                        setIsDeleteDialogOpen(true);
+                      }}
+                    >
+                      <TrashIcon className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))
+          )}
         </TableBody>
       </Table>
+
+      <DataPagination 
+        currentPage={currentPage}
+        totalPages={totalPages}
+        setCurrentPage={setCurrentPage}
+        pageSize={pageSize}
+        totalItems={filteredParams.length}
+        onPageSizeChange={setPageSize}
+        showPageSize={true}
+      />
 
       {/* Add Parameter Dialog */}
       <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>

@@ -1,8 +1,9 @@
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Button, Input, Select, Table, Tag, Space, Card, Typography } from 'antd';
 import { PlusOutlined, SearchOutlined, EyeOutlined, EditOutlined, DeleteOutlined, SendOutlined, FormOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
+import DataPagination from '@/components/common/DataPagination';
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -33,21 +34,32 @@ const BadgeManagement = () => {
   const [searchText, setSearchText] = useState('');
   const [badgeTypeFilter, setBadgeTypeFilter] = useState<number | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 5;
+  const [pageSize, setPageSize] = useState(5);
 
   // Filter badges based on search and filter
-  const filteredBadges = mockBadges.filter(badge => {
-    const matchesSearch = searchText 
-      ? badge.badge_name.toLowerCase().includes(searchText.toLowerCase()) || 
-        badge.description.toLowerCase().includes(searchText.toLowerCase())
-      : true;
-    
-    const matchesType = badgeTypeFilter !== null 
-      ? badge.badge_type === badgeTypeFilter
-      : true;
-    
-    return matchesSearch && matchesType;
-  });
+  const filteredBadges = useMemo(() => {
+    return mockBadges.filter(badge => {
+      const matchesSearch = searchText 
+        ? badge.badge_name.toLowerCase().includes(searchText.toLowerCase()) || 
+          badge.description.toLowerCase().includes(searchText.toLowerCase())
+        : true;
+      
+      const matchesType = badgeTypeFilter !== null 
+        ? badge.badge_type === badgeTypeFilter
+        : true;
+      
+      return matchesSearch && matchesType;
+    });
+  }, [searchText, badgeTypeFilter]);
+
+  // Get paginated data
+  const paginatedBadges = useMemo(() => {
+    const startIndex = (currentPage - 1) * pageSize;
+    return filteredBadges.slice(startIndex, startIndex + pageSize);
+  }, [filteredBadges, currentPage, pageSize]);
+
+  // Calculate total pages
+  const totalPages = Math.max(1, Math.ceil(filteredBadges.length / pageSize));
 
   // Table columns
   const columns = [
@@ -171,17 +183,23 @@ const BadgeManagement = () => {
 
       <Card>
         <Table
-          dataSource={filteredBadges}
+          dataSource={paginatedBadges}
           columns={columns}
           rowKey="id"
-          pagination={{
-            current: currentPage,
-            pageSize,
-            total: filteredBadges.length,
-            onChange: page => setCurrentPage(page),
-            showSizeChanger: false,
-          }}
+          pagination={false}
         />
+        
+        <div className="mt-4">
+          <DataPagination 
+            currentPage={currentPage}
+            totalPages={totalPages}
+            setCurrentPage={setCurrentPage}
+            pageSize={pageSize}
+            totalItems={filteredBadges.length}
+            onPageSizeChange={setPageSize}
+            showPageSize={true}
+          />
+        </div>
       </Card>
     </div>
   );
