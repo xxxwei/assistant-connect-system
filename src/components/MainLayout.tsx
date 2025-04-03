@@ -11,7 +11,8 @@ import {
   LogoutOutlined,
   UsergroupAddOutlined,
   TrophyOutlined,
-  ToolOutlined
+  ToolOutlined,
+  ShoppingCartOutlined
 } from '@ant-design/icons';
 import { Link, useLocation } from 'react-router-dom';
 import { logout } from '../services/authService';
@@ -92,6 +93,11 @@ const MainLayout = ({ children }: MainLayoutProps) => {
               key: '/customers',
               icon: <UserOutlined />,
               label: <Link to="/customers">Customers</Link>,
+            },
+            {
+              key: '/orders',
+              icon: <ShoppingCartOutlined />,
+              label: <Link to="/orders">Orders</Link>,
             },
             {
               key: '/users',

@@ -9,6 +9,9 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import UserList from "./pages/UserList";
 import UserDetails from "./pages/UserDetails";
+import OrderList from "./pages/OrderList";
+import OrderDetail from "./pages/OrderDetail";
+import OrderReports from "./pages/OrderReports";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 import MainLayout from "./components/MainLayout";
@@ -72,6 +75,31 @@ const App = () => {
                 <ProtectedRoute>
                   <MainLayout>
                     <UserDetails />
+                  </MainLayout>
+                </ProtectedRoute>
+              } />
+              
+              {/* Order routes */}
+              <Route path="/orders" element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <OrderList />
+                  </MainLayout>
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/orders/:id" element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <OrderDetail />
+                  </MainLayout>
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/orders/reports" element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <OrderReports />
                   </MainLayout>
                 </ProtectedRoute>
               } />
