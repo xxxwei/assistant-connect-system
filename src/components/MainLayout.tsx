@@ -12,7 +12,8 @@ import {
   UsergroupAddOutlined,
   TrophyOutlined,
   ToolOutlined,
-  ShoppingCartOutlined
+  ShoppingCartOutlined,
+  EnvironmentOutlined
 } from '@ant-design/icons';
 import { Link, useLocation } from 'react-router-dom';
 import { logout } from '../services/authService';
@@ -98,6 +99,11 @@ const MainLayout = ({ children }: MainLayoutProps) => {
               key: '/orders',
               icon: <ShoppingCartOutlined />,
               label: <Link to="/orders">Orders</Link>,
+            },
+            {
+              key: '/site-surveys',
+              icon: <EnvironmentOutlined />,
+              label: <Link to="/site-surveys">Site Surveys</Link>,
             },
             {
               key: '/users',

@@ -12,6 +12,9 @@ import UserDetails from "./pages/UserDetails";
 import OrderList from "./pages/OrderList";
 import OrderDetail from "./pages/OrderDetail";
 import OrderReports from "./pages/OrderReports";
+import SiteSurveyManagement from "./pages/SiteSurveyManagement";
+import SiteSurveyDetail from "./pages/SiteSurveyDetail";
+import SiteSurveyForm from "./pages/SiteSurveyForm";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 import MainLayout from "./components/MainLayout";
@@ -100,6 +103,39 @@ const App = () => {
                 <ProtectedRoute>
                   <MainLayout>
                     <OrderReports />
+                  </MainLayout>
+                </ProtectedRoute>
+              } />
+              
+              {/* Site Survey routes */}
+              <Route path="/site-surveys" element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <SiteSurveyManagement />
+                  </MainLayout>
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/site-surveys/:id" element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <SiteSurveyDetail />
+                  </MainLayout>
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/site-surveys/create" element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <SiteSurveyForm />
+                  </MainLayout>
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/site-surveys/:id/edit" element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <SiteSurveyForm />
                   </MainLayout>
                 </ProtectedRoute>
               } />
