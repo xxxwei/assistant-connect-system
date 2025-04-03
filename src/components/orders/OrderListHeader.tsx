@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { PlusIcon } from "lucide-react";
+import { PlusIcon, BarChart2 } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const OrderListHeader: React.FC = () => {
@@ -14,6 +14,7 @@ const OrderListHeader: React.FC = () => {
       <div className="flex gap-2">
         <Link to="/orders/reports">
           <Button variant="outline">
+            <BarChart2 className="mr-2 h-4 w-4" />
             View Reports
           </Button>
         </Link>

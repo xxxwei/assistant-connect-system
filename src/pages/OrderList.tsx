@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { 
@@ -27,7 +26,6 @@ import DataPagination from "@/components/common/DataPagination";
 import OrderListHeader from "@/components/orders/OrderListHeader";
 import { Link } from "react-router-dom";
 
-// Mock data for demo
 const mockOrders = Array.from({ length: 50 }).map((_, index) => ({
   id: `order-${index + 1}`,
   reviewer_email: `reviewer${index + 1}@example.com`,
@@ -50,7 +48,6 @@ const OrderList = () => {
   const [pageSize, setPageSize] = useState(10);
   const [totalItems, setTotalItems] = useState(0);
   
-  // Filter states
   const [reviewerEmail, setReviewerEmail] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
   const [eventType, setEventType] = useState("");
@@ -60,17 +57,14 @@ const OrderList = () => {
   const [endDate, setEndDate] = useState(null);
 
   useEffect(() => {
-    // In a real app, fetch orders from API
     setOrders(mockOrders);
     
-    // Initialize from URL params if any
     const page = searchParams.get('page') ? parseInt(searchParams.get('page')) : 1;
     const size = searchParams.get('size') ? parseInt(searchParams.get('size')) : 10;
     
     setCurrentPage(page);
     setPageSize(size);
     
-    // Get filter values from URL if present
     if (searchParams.get('reviewerEmail')) setReviewerEmail(searchParams.get('reviewerEmail'));
     if (searchParams.get('customerEmail')) setCustomerEmail(searchParams.get('customerEmail'));
     if (searchParams.get('eventType')) setEventType(searchParams.get('eventType'));
@@ -81,7 +75,6 @@ const OrderList = () => {
   }, []);
 
   useEffect(() => {
-    // Apply filters
     let result = [...orders];
     
     if (reviewerEmail) {
@@ -130,11 +123,9 @@ const OrderList = () => {
     setTotalItems(result.length);
     setTotalPages(Math.ceil(result.length / pageSize));
     
-    // Apply pagination
     const startIndex = (currentPage - 1) * pageSize;
     setFilteredOrders(result.slice(startIndex, startIndex + pageSize));
     
-    // Update URL params
     const params = new URLSearchParams();
     params.set('page', currentPage.toString());
     params.set('size', pageSize.toString());
@@ -156,11 +147,11 @@ const OrderList = () => {
 
   const handlePageSizeChange = (size) => {
     setPageSize(size);
-    setCurrentPage(1); // Reset to first page when changing page size
+    setCurrentPage(1);
   };
 
   const handleSearch = () => {
-    setCurrentPage(1); // Reset to first page when searching
+    setCurrentPage(1);
   };
 
   const handleClearFilters = () => {
@@ -195,7 +186,6 @@ const OrderList = () => {
     <div className="p-6">
       <OrderListHeader />
       
-      {/* Filters */}
       <div className="bg-white p-4 rounded-lg shadow mb-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
           <div>
@@ -227,7 +217,7 @@ const OrderList = () => {
                 <SelectValue placeholder="All Event Types" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Types</SelectItem>
+                <SelectItem value="all">All Types</SelectItem>
                 <SelectItem value="0">Booking</SelectItem>
                 <SelectItem value="1">Public Service</SelectItem>
               </SelectContent>
@@ -241,7 +231,7 @@ const OrderList = () => {
                 <SelectValue placeholder="All Statuses" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Statuses</SelectItem>
+                <SelectItem value="all">All Statuses</SelectItem>
                 <SelectItem value="0">Submitted</SelectItem>
                 <SelectItem value="1">Started</SelectItem>
                 <SelectItem value="2">Finished</SelectItem>
@@ -256,7 +246,7 @@ const OrderList = () => {
                 <SelectValue placeholder="All Payment Statuses" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All</SelectItem>
+                <SelectItem value="all">All</SelectItem>
                 <SelectItem value="true">Paid</SelectItem>
                 <SelectItem value="false">Unpaid</SelectItem>
               </SelectContent>
@@ -324,7 +314,6 @@ const OrderList = () => {
         </div>
       </div>
       
-      {/* Orders Table */}
       <div className="bg-white rounded-lg shadow overflow-hidden">
         <Table>
           <TableHeader>
