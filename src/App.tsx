@@ -9,12 +9,17 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import UserList from "./pages/UserList";
 import UserDetails from "./pages/UserDetails";
+import UserProfile from "./pages/UserProfile";
 import OrderList from "./pages/OrderList";
 import OrderDetail from "./pages/OrderDetail";
 import OrderReports from "./pages/OrderReports";
 import SiteSurveyManagement from "./pages/SiteSurveyManagement";
 import SiteSurveyDetail from "./pages/SiteSurveyDetail";
 import SiteSurveyForm from "./pages/SiteSurveyForm";
+import DroneManagement from "./pages/DroneManagement";
+import PilotManagement from "./pages/PilotManagement";
+import ReviewPackageManagement from "./pages/ReviewPackageManagement";
+import ReviewAddressManagement from "./pages/ReviewAddressManagement";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 import MainLayout from "./components/MainLayout";
@@ -78,6 +83,50 @@ const App = () => {
                 <ProtectedRoute>
                   <MainLayout>
                     <UserDetails />
+                  </MainLayout>
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/profile/:id" element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <UserProfile />
+                  </MainLayout>
+                </ProtectedRoute>
+              } />
+              
+              {/* Drone routes */}
+              <Route path="/drones" element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <DroneManagement />
+                  </MainLayout>
+                </ProtectedRoute>
+              } />
+              
+              {/* Pilot routes */}
+              <Route path="/pilots" element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <PilotManagement />
+                  </MainLayout>
+                </ProtectedRoute>
+              } />
+              
+              {/* Review Package routes */}
+              <Route path="/review-packages" element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <ReviewPackageManagement />
+                  </MainLayout>
+                </ProtectedRoute>
+              } />
+              
+              {/* Review Address routes */}
+              <Route path="/review-addresses" element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <ReviewAddressManagement />
                   </MainLayout>
                 </ProtectedRoute>
               } />

@@ -13,7 +13,12 @@ import {
   TrophyOutlined,
   ToolOutlined,
   ShoppingCartOutlined,
-  EnvironmentOutlined
+  EnvironmentOutlined,
+  RocketOutlined,
+  IdcardOutlined,
+  AppstoreOutlined,
+  DollarOutlined,
+  HomeOutlined
 } from '@ant-design/icons';
 import { Link, useLocation } from 'react-router-dom';
 import { logout } from '../services/authService';
@@ -36,7 +41,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
   const userMenuItems = [
     {
       key: 'profile',
-      label: 'Profile',
+      label: <Link to="/profile/1">Profile</Link>,
       icon: <UserOutlined />,
     },
     {
@@ -109,6 +114,36 @@ const MainLayout = ({ children }: MainLayoutProps) => {
               key: '/users',
               icon: <UsergroupAddOutlined />,
               label: <Link to="/users">Users</Link>,
+            },
+            {
+              key: '/drone-management',
+              icon: <RocketOutlined />,
+              label: 'Drone Management',
+              children: [
+                {
+                  key: '/drones',
+                  label: <Link to="/drones">Drones</Link>,
+                },
+                {
+                  key: '/pilots',
+                  label: <Link to="/pilots">Pilots</Link>,
+                }
+              ]
+            },
+            {
+              key: '/review-management',
+              icon: <IdcardOutlined />,
+              label: 'Flight Reviews',
+              children: [
+                {
+                  key: '/review-packages',
+                  label: <Link to="/review-packages">Review Packages</Link>,
+                },
+                {
+                  key: '/review-addresses',
+                  label: <Link to="/review-addresses">Review Addresses</Link>,
+                }
+              ]
             },
             {
               key: '/badges',
