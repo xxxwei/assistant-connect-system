@@ -1,6 +1,5 @@
 
-import { useState } from 'react';
-import { Button } from "@/components/ui/button";
+import { useState, useEffect } from 'react';
 import { Card } from 'antd';
 import { mockDrones } from '../types/drone';
 import DroneListHeader from '../components/drones/DroneListHeader';
@@ -8,32 +7,51 @@ import DroneFilters from '../components/drones/DroneFilters';
 import DroneTable from '../components/drones/DroneTable';
 import UserPagination from '../components/users/UserPagination';
 import DroneFormDialog from '../components/drones/DroneFormDialog';
+import { getCurrentUser, isAdmin, getCurrentUserId } from '../services/userContextService';
 
 const DroneManagement = () => {
   const [searchText, setSearchText] = useState('');
   const [modelFilter, setModelFilter] = useState('all');
   const [colorFilter, setColorFilter] = useState('all');
   const [availabilityFilter, setAvailabilityFilter] = useState('all');
+  const [userIdFilter, setUserIdFilter] = useState('all');
+  const [emailSearch, setEmailSearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingDrone, setEditingDrone] = useState<string | null>(null);
   
   const pageSize = 5;
+  const admin = isAdmin();
+  const currentUserId = getCurrentUserId();
 
-  // Filter drones based on search and filters
-  const filteredDrones = mockDrones.filter(drone => {
+  // Filter drones based on current user context
+  const userDrones = admin 
+    ? mockDrones 
+    : mockDrones.filter(drone => drone.user_id === currentUserId);
+
+  // Further filter drones based on search and filters
+  const filteredDrones = userDrones.filter(drone => {
+    // Filter by user if admin view is enabled
+    const matchesUser = !admin || userIdFilter === 'all' || drone.user_id === userIdFilter;
+    
+    // Filter by search text
     const matchesSearch = searchText === '' || 
       drone.manufacturer.toLowerCase().includes(searchText.toLowerCase()) || 
       drone.model.toLowerCase().includes(searchText.toLowerCase()) ||
       drone.serialno.toLowerCase().includes(searchText.toLowerCase()) ||
       drone.nickname.toLowerCase().includes(searchText.toLowerCase());
     
+    // Filter by model
     const matchesModel = modelFilter === 'all' || drone.model === modelFilter;
+    
+    // Filter by color
     const matchesColor = colorFilter === 'all' || drone.color === colorFilter;
+    
+    // Filter by availability
     const matchesAvailability = availabilityFilter === 'all' || 
       (availabilityFilter === 'true' ? drone.availability : !drone.availability);
     
-    return matchesSearch && matchesModel && matchesColor && matchesAvailability;
+    return matchesUser && matchesSearch && matchesModel && matchesColor && matchesAvailability;
   });
 
   // Paginate the filtered drones
@@ -55,6 +73,10 @@ const DroneManagement = () => {
     setModelFilter('all');
     setColorFilter('all');
     setAvailabilityFilter('all');
+    if (admin) {
+      setUserIdFilter('all');
+      setEmailSearch('');
+    }
     setCurrentPage(1);
   };
 
@@ -72,7 +94,7 @@ const DroneManagement = () => {
 
   return (
     <div className="p-6">
-      <DroneListHeader onAddDrone={handleAddDrone} />
+      <DroneListHeader onAddDrone={handleAddDrone} isAdmin={admin} />
       
       {/* Search and Filters */}
       <DroneFilters 
@@ -84,6 +106,11 @@ const DroneManagement = () => {
         setColorFilter={setColorFilter}
         availabilityFilter={availabilityFilter}
         setAvailabilityFilter={setAvailabilityFilter}
+        userIdFilter={userIdFilter}
+        setUserIdFilter={setUserIdFilter}
+        emailSearch={emailSearch}
+        setEmailSearch={setEmailSearch}
+        isAdmin={admin}
         handleSearch={handleSearch}
         handleReset={handleReset}
       />
@@ -100,6 +127,7 @@ const DroneManagement = () => {
         <DroneTable 
           drones={paginatedDrones} 
           onEdit={handleEditDrone}
+          isAdmin={admin}
         />
       </Card>
       

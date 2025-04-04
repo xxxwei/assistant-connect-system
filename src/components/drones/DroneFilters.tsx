@@ -3,6 +3,7 @@ import React from 'react';
 import { Input, Select, Button, Card } from 'antd';
 import { SearchOutlined, ReloadOutlined } from '@ant-design/icons';
 import { droneModels, droneColors } from '../../types/drone';
+import UserFilter from '../common/UserFilter';
 
 interface DroneFiltersProps {
   searchText: string;
@@ -13,6 +14,11 @@ interface DroneFiltersProps {
   setColorFilter: (color: string) => void;
   availabilityFilter: string;
   setAvailabilityFilter: (availability: string) => void;
+  userIdFilter?: string;
+  setUserIdFilter?: (userId: string) => void;
+  emailSearch?: string;
+  setEmailSearch?: (email: string) => void;
+  isAdmin?: boolean;
   handleSearch: () => void;
   handleReset: () => void;
 }
@@ -26,6 +32,11 @@ const DroneFilters: React.FC<DroneFiltersProps> = ({
   setColorFilter,
   availabilityFilter,
   setAvailabilityFilter,
+  userIdFilter = 'all',
+  setUserIdFilter = () => {},
+  emailSearch = '',
+  setEmailSearch = () => {},
+  isAdmin = false,
   handleSearch,
   handleReset
 }) => {
@@ -50,6 +61,20 @@ const DroneFilters: React.FC<DroneFiltersProps> = ({
 
   return (
     <Card className="mb-6 shadow-sm">
+      {isAdmin && (
+        <div className="mb-4">
+          <UserFilter
+            userIdFilter={userIdFilter}
+            setUserIdFilter={setUserIdFilter}
+            emailSearch={emailSearch}
+            setEmailSearch={setEmailSearch}
+            onSearch={handleSearch}
+            onReset={handleReset}
+          />
+          <div className="border-t my-4"></div>
+        </div>
+      )}
+      
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div>
           <Input 

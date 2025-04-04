@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button, Tag } from 'antd';
-import { EyeOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { 
   Table,
   TableHeader,
@@ -11,15 +11,27 @@ import {
   TableCell
 } from "@/components/ui/table";
 import { Drone } from '../../types/drone';
+import { mockUsers } from '../../types/user';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { format } from 'date-fns';
 
 interface DroneTableProps {
   drones: Drone[];
   onEdit: (droneId: string) => void;
+  isAdmin?: boolean;
 }
 
-const DroneTable: React.FC<DroneTableProps> = ({ drones, onEdit }) => {
+const DroneTable: React.FC<DroneTableProps> = ({ 
+  drones, 
+  onEdit,
+  isAdmin = false
+}) => {
+  // Function to get user name from ID
+  const getUserName = (userId: string) => {
+    const user = mockUsers.find(u => u.id === userId);
+    return user ? user.name : 'Unknown User';
+  };
+
   return (
     <Table>
       <TableHeader>
@@ -31,6 +43,7 @@ const DroneTable: React.FC<DroneTableProps> = ({ drones, onEdit }) => {
           <TableHead>Nickname</TableHead>
           <TableHead>Color</TableHead>
           <TableHead>Availability</TableHead>
+          {isAdmin && <TableHead>Owner</TableHead>}
           <TableHead>Certificate</TableHead>
           <TableHead className="text-right">Actions</TableHead>
         </TableRow>
@@ -38,7 +51,7 @@ const DroneTable: React.FC<DroneTableProps> = ({ drones, onEdit }) => {
       <TableBody>
         {drones.length === 0 ? (
           <TableRow>
-            <TableCell colSpan={9} className="text-center py-8">
+            <TableCell colSpan={isAdmin ? 10 : 9} className="text-center py-8">
               No drones found matching your search criteria
             </TableCell>
           </TableRow>
@@ -66,6 +79,9 @@ const DroneTable: React.FC<DroneTableProps> = ({ drones, onEdit }) => {
                   {drone.availability ? 'Available' : 'Unavailable'}
                 </Tag>
               </TableCell>
+              {isAdmin && (
+                <TableCell>{getUserName(drone.user_id)}</TableCell>
+              )}
               <TableCell>
                 {drone.certificateFile ? (
                   <Dialog>

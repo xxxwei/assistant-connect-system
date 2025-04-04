@@ -12,19 +12,28 @@ import {
 } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
 import { ReviewPackage } from '../../types/reviewPackage';
+import { mockUsers } from '../../types/user';
 import { format } from 'date-fns';
 
 interface ReviewPackageTableProps {
   packages: ReviewPackage[];
   onEdit: (packageId: string) => void;
   onToggleStatus: (packageId: string, enabled: boolean) => void;
+  isAdmin?: boolean;
 }
 
 const ReviewPackageTable: React.FC<ReviewPackageTableProps> = ({ 
   packages, 
   onEdit,
-  onToggleStatus
+  onToggleStatus,
+  isAdmin = false
 }) => {
+  // Function to get reviewer name from ID
+  const getReviewerName = (reviewerId: string) => {
+    const user = mockUsers.find(u => u.id === reviewerId);
+    return user ? user.name : 'Unknown Reviewer';
+  };
+
   return (
     <Table>
       <TableHeader>
@@ -33,6 +42,7 @@ const ReviewPackageTable: React.FC<ReviewPackageTableProps> = ({
           <TableHead>Description</TableHead>
           <TableHead>Price</TableHead>
           <TableHead>Type</TableHead>
+          {isAdmin && <TableHead>Reviewer</TableHead>}
           <TableHead>Status</TableHead>
           <TableHead>Created</TableHead>
           <TableHead className="text-right">Actions</TableHead>
@@ -41,7 +51,7 @@ const ReviewPackageTable: React.FC<ReviewPackageTableProps> = ({
       <TableBody>
         {packages.length === 0 ? (
           <TableRow>
-            <TableCell colSpan={7} className="text-center py-8">
+            <TableCell colSpan={isAdmin ? 8 : 7} className="text-center py-8">
               No review packages found. Create your first package to get started.
             </TableCell>
           </TableRow>
@@ -64,6 +74,9 @@ const ReviewPackageTable: React.FC<ReviewPackageTableProps> = ({
                   {pkg.package_type.charAt(0).toUpperCase() + pkg.package_type.slice(1)}
                 </Tag>
               </TableCell>
+              {isAdmin && (
+                <TableCell>{getReviewerName(pkg.reviewer_id)}</TableCell>
+              )}
               <TableCell>
                 <div className="flex items-center space-x-2">
                   <Switch 

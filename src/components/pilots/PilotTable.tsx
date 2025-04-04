@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button, Tag } from 'antd';
-import { EyeOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { 
   Table,
   TableHeader,
@@ -12,14 +12,26 @@ import {
 } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Pilot } from '../../types/pilot';
+import { mockUsers } from '../../types/user';
 import { format } from 'date-fns';
 
 interface PilotTableProps {
   pilots: Pilot[];
   onEdit: (pilotId: string) => void;
+  isAdmin?: boolean;
 }
 
-const PilotTable: React.FC<PilotTableProps> = ({ pilots, onEdit }) => {
+const PilotTable: React.FC<PilotTableProps> = ({ 
+  pilots, 
+  onEdit,
+  isAdmin = false
+}) => {
+  // Function to get user name from ID
+  const getUserName = (userId: string) => {
+    const user = mockUsers.find(u => u.id === userId);
+    return user ? user.name : 'Unknown User';
+  };
+
   return (
     <Table>
       <TableHeader>
@@ -28,6 +40,7 @@ const PilotTable: React.FC<PilotTableProps> = ({ pilots, onEdit }) => {
           <TableHead>License</TableHead>
           <TableHead>Contact</TableHead>
           <TableHead>Role</TableHead>
+          {isAdmin && <TableHead>Owner</TableHead>}
           <TableHead>License File</TableHead>
           <TableHead className="text-right">Actions</TableHead>
         </TableRow>
@@ -35,7 +48,7 @@ const PilotTable: React.FC<PilotTableProps> = ({ pilots, onEdit }) => {
       <TableBody>
         {pilots.length === 0 ? (
           <TableRow>
-            <TableCell colSpan={6} className="text-center py-8">
+            <TableCell colSpan={isAdmin ? 7 : 6} className="text-center py-8">
               No pilots found matching your search criteria
             </TableCell>
           </TableRow>
@@ -58,6 +71,9 @@ const PilotTable: React.FC<PilotTableProps> = ({ pilots, onEdit }) => {
                   {pilot.superuser && <Tag color="gold">Superuser</Tag>}
                 </div>
               </TableCell>
+              {isAdmin && (
+                <TableCell>{getUserName(pilot.user_id)}</TableCell>
+              )}
               <TableCell>
                 {pilot.licenseFile ? (
                   <Dialog>

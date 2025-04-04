@@ -13,18 +13,27 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ReviewAddress } from '../../types/reviewAddress';
+import { mockUsers } from '../../types/user';
 
 interface ReviewAddressTableProps {
   addresses: ReviewAddress[];
   onEdit: (addressId: string) => void;
   onToggleStatus: (addressId: string, enabled: boolean) => void;
+  isAdmin?: boolean;
 }
 
 const ReviewAddressTable: React.FC<ReviewAddressTableProps> = ({ 
   addresses, 
   onEdit,
-  onToggleStatus
+  onToggleStatus,
+  isAdmin = false
 }) => {
+  // Function to get reviewer name from ID
+  const getReviewerName = (reviewerId: string) => {
+    const user = mockUsers.find(u => u.id === reviewerId);
+    return user ? user.name : 'Unknown Reviewer';
+  };
+
   return (
     <Table>
       <TableHeader>
@@ -32,6 +41,7 @@ const ReviewAddressTable: React.FC<ReviewAddressTableProps> = ({
           <TableHead>Address</TableHead>
           <TableHead>Province</TableHead>
           <TableHead>Description</TableHead>
+          {isAdmin && <TableHead>Reviewer</TableHead>}
           <TableHead>Coordinates</TableHead>
           <TableHead>Status</TableHead>
           <TableHead className="text-right">Actions</TableHead>
@@ -40,7 +50,7 @@ const ReviewAddressTable: React.FC<ReviewAddressTableProps> = ({
       <TableBody>
         {addresses.length === 0 ? (
           <TableRow>
-            <TableCell colSpan={6} className="text-center py-8">
+            <TableCell colSpan={isAdmin ? 7 : 6} className="text-center py-8">
               No review addresses found. Create your first address to get started.
             </TableCell>
           </TableRow>
@@ -57,6 +67,9 @@ const ReviewAddressTable: React.FC<ReviewAddressTableProps> = ({
                   {address.address_customized || address.review_street_desc || '-'}
                 </div>
               </TableCell>
+              {isAdmin && (
+                <TableCell>{getReviewerName(address.reviewer_id)}</TableCell>
+              )}
               <TableCell>
                 <Dialog>
                   <DialogTrigger asChild>
