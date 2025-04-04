@@ -12,11 +12,11 @@ const DroneListHeader: React.FC<DroneListHeaderProps> = ({ onAddDrone, isAdmin =
   return (
     <div className="flex justify-between items-center mb-6">
       <div>
-        <h1 className="text-2xl font-light">Drone Management</h1>
+        <h1 className="text-2xl font-bold">Drone Management</h1>
         <p className="text-muted-foreground">
           {isAdmin 
-            ? "Manage all drones across users"
-            : "Manage your drone information and certifications"}
+            ? "Manage all user drones in the system (10 records available)"
+            : "Manage your registered drones and certification information"}
         </p>
       </div>
       <div>

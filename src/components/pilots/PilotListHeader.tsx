@@ -12,10 +12,10 @@ const PilotListHeader: React.FC<PilotListHeaderProps> = ({ onAddPilot, isAdmin =
   return (
     <div className="flex justify-between items-center mb-6">
       <div>
-        <h1 className="text-2xl font-light">Pilot Management</h1>
+        <h1 className="text-2xl font-bold">Pilot Management</h1>
         <p className="text-muted-foreground">
           {isAdmin 
-            ? "Manage all pilots across users"
+            ? "Manage all registered pilots in the system (10 records available)"
             : "Manage your pilot information and certifications"}
         </p>
       </div>

@@ -91,6 +91,81 @@ export const mockDrones: Drone[] = [
     user_id: '4',
     create_time: '2024-03-01T08:45:00Z',
     update_time: '2024-03-01T08:45:00Z'
+  },
+  {
+    id: '6',
+    manufacturer: 'DJI',
+    model: 'Mini 3 Pro',
+    serialno: 'DJI3698521',
+    registrationnumber: 'REG-246-135',
+    nickname: 'Firefly',
+    color: 'Black',
+    threshold: 75,
+    availability: true,
+    certificateFile: 'certificate6.pdf',
+    user_id: '1',
+    create_time: '2024-02-12T14:25:00Z',
+    update_time: '2024-02-12T14:25:00Z'
+  },
+  {
+    id: '7',
+    manufacturer: 'Yuneec',
+    model: 'Typhoon H3',
+    serialno: 'YUN2587413',
+    registrationnumber: 'REG-753-159',
+    nickname: 'Hurricane',
+    color: 'Silver',
+    threshold: 130,
+    availability: false,
+    certificateFile: 'certificate7.pdf',
+    user_id: '2',
+    create_time: '2024-01-18T09:50:00Z',
+    update_time: '2024-03-05T11:30:00Z'
+  },
+  {
+    id: '8',
+    manufacturer: 'Autel Robotics',
+    model: 'EVO Lite+',
+    serialno: 'AUT9514782',
+    registrationnumber: 'REG-369-258',
+    nickname: 'Firebird',
+    color: 'Red',
+    threshold: 95,
+    availability: true,
+    certificateFile: 'certificate8.pdf',
+    user_id: '3',
+    create_time: '2024-03-07T13:40:00Z',
+    update_time: '2024-03-07T13:40:00Z'
+  },
+  {
+    id: '9',
+    manufacturer: 'FIMI',
+    model: 'X8 SE',
+    serialno: 'FIM7539514',
+    registrationnumber: 'REG-159-357',
+    nickname: 'Scout',
+    color: 'Yellow',
+    threshold: 85,
+    availability: true,
+    certificateFile: 'certificate9.pdf',
+    user_id: '4',
+    create_time: '2024-02-28T15:20:00Z',
+    update_time: '2024-02-28T15:20:00Z'
+  },
+  {
+    id: '10',
+    manufacturer: 'PowerVision',
+    model: 'PowerEgg X',
+    serialno: 'PWV3578951',
+    registrationnumber: 'REG-852-741',
+    nickname: 'Phoenix',
+    color: 'Purple',
+    threshold: 105,
+    availability: false,
+    certificateFile: 'certificate10.pdf',
+    user_id: '1',
+    create_time: '2024-01-25T11:55:00Z',
+    update_time: '2024-03-12T10:05:00Z'
   }
 ];
 
@@ -128,7 +203,10 @@ export const droneModels = [
   'Mini 3 Pro',
   'Phantom 4 Pro',
   'EVO II',
+  'EVO Lite+',
   'Skydio 2+',
   'Anafi',
-  'Typhoon H3'
+  'Typhoon H3',
+  'PowerEgg X',
+  'X8 SE'
 ];
