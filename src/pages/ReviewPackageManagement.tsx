@@ -7,7 +7,6 @@ import ReviewPackageFilters from '../components/reviewPackages/ReviewPackageFilt
 import ReviewPackageTable from '../components/reviewPackages/ReviewPackageTable';
 import UserPagination from '../components/users/UserPagination';
 import ReviewPackageFormDialog from '../components/reviewPackages/ReviewPackageFormDialog';
-import { isAdmin, getCurrentUserId, isFlightReviewer } from '../services/userContextService';
 
 const ReviewPackageManagement = () => {
   const [searchText, setSearchText] = useState('');
@@ -20,33 +19,12 @@ const ReviewPackageManagement = () => {
   const [editingPackage, setEditingPackage] = useState<string | null>(null);
   
   const pageSize = 5;
-  const admin = isAdmin();
-  const isReviewer = isFlightReviewer();
-  const currentUserId = getCurrentUserId();
+  // Always show as admin
+  const admin = true;
+  const currentUserId = "1"; // Default user ID for forms
 
-  // Only flight reviewers or admins can access this page
-  // In a real app, you'd redirect non-reviewers away
-  if (!admin && !isReviewer) {
-    return (
-      <div className="p-6">
-        <h1 className="text-2xl font-light mb-4">Review Package Management</h1>
-        <Card className="shadow-sm">
-          <p>You don't have permission to access this page.</p>
-        </Card>
-      </div>
-    );
-  }
-
-  // Filter packages based on current user context
-  const userPackages = admin 
-    ? mockReviewPackages 
-    : mockReviewPackages.filter(pkg => pkg.reviewer_id === currentUserId);
-
-  // Further filter packages based on search and filters
-  const filteredPackages = userPackages.filter(pkg => {
-    // Filter by user if admin view is enabled
-    const matchesUser = !admin || userIdFilter === 'all' || pkg.reviewer_id === userIdFilter;
-    
+  // Show all packages
+  const filteredPackages = mockReviewPackages.filter(pkg => {
     // Filter by search text
     const matchesSearch = searchText === '' || 
       pkg.title.toLowerCase().includes(searchText.toLowerCase()) || 
@@ -59,7 +37,7 @@ const ReviewPackageManagement = () => {
     const matchesStatus = statusFilter === 'all' || 
       (statusFilter === 'true' ? pkg.enabled : !pkg.enabled);
     
-    return matchesUser && matchesSearch && matchesType && matchesStatus;
+    return matchesSearch && matchesType && matchesStatus;
   });
 
   // Paginate the filtered packages
@@ -80,10 +58,8 @@ const ReviewPackageManagement = () => {
     setSearchText('');
     setPackageTypeFilter('all');
     setStatusFilter('all');
-    if (admin) {
-      setUserIdFilter('all');
-      setEmailSearch('');
-    }
+    setUserIdFilter('all');
+    setEmailSearch('');
     setCurrentPage(1);
   };
 
@@ -157,7 +133,7 @@ const ReviewPackageManagement = () => {
         isOpen={isDialogOpen}
         onClose={() => setIsDialogOpen(false)}
         packageId={editingPackage}
-        reviewerId={currentUserId || ''}
+        reviewerId={currentUserId}
       />
     </div>
   );

@@ -7,7 +7,6 @@ import PilotFilters from '../components/pilots/PilotFilters';
 import PilotTable from '../components/pilots/PilotTable';
 import UserPagination from '../components/users/UserPagination';
 import PilotFormDialog from '../components/pilots/PilotFormDialog';
-import { isAdmin, getCurrentUserId } from '../services/userContextService';
 
 const PilotManagement = () => {
   const [searchText, setSearchText] = useState('');
@@ -18,19 +17,11 @@ const PilotManagement = () => {
   const [editingPilot, setEditingPilot] = useState<string | null>(null);
   
   const pageSize = 5;
-  const admin = isAdmin();
-  const currentUserId = getCurrentUserId();
+  // Always show as admin
+  const admin = true;
 
-  // Filter pilots based on current user context
-  const userPilots = admin 
-    ? mockPilots 
-    : mockPilots.filter(pilot => pilot.user_id === currentUserId);
-
-  // Further filter pilots based on search
-  const filteredPilots = userPilots.filter(pilot => {
-    // Filter by user if admin view is enabled
-    const matchesUser = !admin || userIdFilter === 'all' || pilot.user_id === userIdFilter;
-    
+  // Show all pilots
+  const filteredPilots = mockPilots.filter(pilot => {
     // Filter by search text
     const matchesSearch = searchText === '' || 
       pilot.firstname.toLowerCase().includes(searchText.toLowerCase()) || 
@@ -38,7 +29,7 @@ const PilotManagement = () => {
       pilot.email.toLowerCase().includes(searchText.toLowerCase()) ||
       pilot.license.toLowerCase().includes(searchText.toLowerCase());
     
-    return matchesUser && matchesSearch;
+    return matchesSearch;
   });
 
   // Paginate the filtered pilots
@@ -57,10 +48,8 @@ const PilotManagement = () => {
   // Handle reset
   const handleReset = () => {
     setSearchText('');
-    if (admin) {
-      setUserIdFilter('all');
-      setEmailSearch('');
-    }
+    setUserIdFilter('all');
+    setEmailSearch('');
     setCurrentPage(1);
   };
 

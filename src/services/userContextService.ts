@@ -2,9 +2,8 @@
 import { User } from '../types/user';
 import { mockUsers } from '../types/user';
 
-// Simulate the current logged-in user
-// In a real app, this would come from your auth system
-let currentUser: User | null = mockUsers.find(user => user.id === '6') || null;
+// For demo purposes, we'll simulate that we're always admin
+let currentUser: User | null = mockUsers.find(user => user.type === 'admin') || null;
 
 export const getCurrentUser = (): User | null => {
   return currentUser;
@@ -14,12 +13,13 @@ export const setCurrentUser = (user: User | null): void => {
   currentUser = user;
 };
 
+// Always return true for admin
 export const isAdmin = (): boolean => {
-  return currentUser?.type === 'admin';
+  return true;
 };
 
 export const isFlightReviewer = (): boolean => {
-  return currentUser?.type === 'flight_reviewer';
+  return true;
 };
 
 export const getCurrentUserId = (): string | null => {

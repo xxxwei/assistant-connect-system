@@ -7,7 +7,6 @@ import ReviewAddressFilters from '../components/reviewAddresses/ReviewAddressFil
 import ReviewAddressTable from '../components/reviewAddresses/ReviewAddressTable';
 import UserPagination from '../components/users/UserPagination';
 import ReviewAddressFormDialog from '../components/reviewAddresses/ReviewAddressFormDialog';
-import { isAdmin, getCurrentUserId, isFlightReviewer } from '../services/userContextService';
 
 const ReviewAddressManagement = () => {
   const [searchText, setSearchText] = useState('');
@@ -20,33 +19,12 @@ const ReviewAddressManagement = () => {
   const [editingAddress, setEditingAddress] = useState<string | null>(null);
   
   const pageSize = 5;
-  const admin = isAdmin();
-  const isReviewer = isFlightReviewer();
-  const currentUserId = getCurrentUserId();
+  // Always show as admin
+  const admin = true;
+  const currentUserId = "1"; // Default user ID for forms
 
-  // Only flight reviewers or admins can access this page
-  // In a real app, you'd redirect non-reviewers away
-  if (!admin && !isReviewer) {
-    return (
-      <div className="p-6">
-        <h1 className="text-2xl font-light mb-4">Review Address Management</h1>
-        <Card className="shadow-sm">
-          <p>You don't have permission to access this page.</p>
-        </Card>
-      </div>
-    );
-  }
-
-  // Filter addresses based on current user context
-  const userAddresses = admin 
-    ? mockReviewAddresses 
-    : mockReviewAddresses.filter(address => address.reviewer_id === currentUserId);
-
-  // Further filter addresses based on search and filters
-  const filteredAddresses = userAddresses.filter(address => {
-    // Filter by user if admin view is enabled
-    const matchesUser = !admin || userIdFilter === 'all' || address.reviewer_id === userIdFilter;
-    
+  // Show all addresses
+  const filteredAddresses = mockReviewAddresses.filter(address => {
     // Filter by search text
     const matchesSearch = searchText === '' || 
       address.city.toLowerCase().includes(searchText.toLowerCase()) || 
@@ -62,7 +40,7 @@ const ReviewAddressManagement = () => {
     const matchesStatus = statusFilter === 'all' || 
       (statusFilter === 'true' ? address.enabled : !address.enabled);
     
-    return matchesUser && matchesSearch && matchesProvince && matchesStatus;
+    return matchesSearch && matchesProvince && matchesStatus;
   });
 
   // Paginate the filtered addresses
@@ -83,10 +61,8 @@ const ReviewAddressManagement = () => {
     setSearchText('');
     setProvinceFilter('all');
     setStatusFilter('all');
-    if (admin) {
-      setUserIdFilter('all');
-      setEmailSearch('');
-    }
+    setUserIdFilter('all');
+    setEmailSearch('');
     setCurrentPage(1);
   };
 
@@ -160,7 +136,7 @@ const ReviewAddressManagement = () => {
         isOpen={isDialogOpen}
         onClose={() => setIsDialogOpen(false)}
         addressId={editingAddress}
-        reviewerId={currentUserId || ''}
+        reviewerId={currentUserId}
       />
     </div>
   );

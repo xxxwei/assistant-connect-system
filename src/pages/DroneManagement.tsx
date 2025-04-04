@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Card } from 'antd';
 import { mockDrones } from '../types/drone';
 import DroneListHeader from '../components/drones/DroneListHeader';
@@ -7,7 +7,6 @@ import DroneFilters from '../components/drones/DroneFilters';
 import DroneTable from '../components/drones/DroneTable';
 import UserPagination from '../components/users/UserPagination';
 import DroneFormDialog from '../components/drones/DroneFormDialog';
-import { getCurrentUser, isAdmin, getCurrentUserId } from '../services/userContextService';
 
 const DroneManagement = () => {
   const [searchText, setSearchText] = useState('');
@@ -21,19 +20,11 @@ const DroneManagement = () => {
   const [editingDrone, setEditingDrone] = useState<string | null>(null);
   
   const pageSize = 5;
-  const admin = isAdmin();
-  const currentUserId = getCurrentUserId();
+  // Always show as admin
+  const admin = true;
 
-  // Filter drones based on current user context
-  const userDrones = admin 
-    ? mockDrones 
-    : mockDrones.filter(drone => drone.user_id === currentUserId);
-
-  // Further filter drones based on search and filters
-  const filteredDrones = userDrones.filter(drone => {
-    // Filter by user if admin view is enabled
-    const matchesUser = !admin || userIdFilter === 'all' || drone.user_id === userIdFilter;
-    
+  // Show all drones
+  const filteredDrones = mockDrones.filter(drone => {
     // Filter by search text
     const matchesSearch = searchText === '' || 
       drone.manufacturer.toLowerCase().includes(searchText.toLowerCase()) || 
@@ -51,7 +42,7 @@ const DroneManagement = () => {
     const matchesAvailability = availabilityFilter === 'all' || 
       (availabilityFilter === 'true' ? drone.availability : !drone.availability);
     
-    return matchesUser && matchesSearch && matchesModel && matchesColor && matchesAvailability;
+    return matchesSearch && matchesModel && matchesColor && matchesAvailability;
   });
 
   // Paginate the filtered drones
@@ -73,10 +64,8 @@ const DroneManagement = () => {
     setModelFilter('all');
     setColorFilter('all');
     setAvailabilityFilter('all');
-    if (admin) {
-      setUserIdFilter('all');
-      setEmailSearch('');
-    }
+    setUserIdFilter('all');
+    setEmailSearch('');
     setCurrentPage(1);
   };
 
