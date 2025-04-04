@@ -2,6 +2,7 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { PlusIcon } from "lucide-react";
+import { mockDrones } from "../../types/drone";
 
 interface DroneListHeaderProps {
   onAddDrone: () => void;
@@ -15,7 +16,7 @@ const DroneListHeader: React.FC<DroneListHeaderProps> = ({ onAddDrone, isAdmin =
         <h1 className="text-2xl font-bold">Drone Management</h1>
         <p className="text-muted-foreground">
           {isAdmin 
-            ? "Manage all user drones in the system (10 records available)"
+            ? `Manage all user drones in the system (${mockDrones.length} records available)`
             : "Manage your registered drones and certification information"}
         </p>
       </div>

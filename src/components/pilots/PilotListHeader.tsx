@@ -2,6 +2,7 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { PlusIcon } from "lucide-react";
+import { mockPilots } from "../../types/pilot";
 
 interface PilotListHeaderProps {
   onAddPilot: () => void;
@@ -15,7 +16,7 @@ const PilotListHeader: React.FC<PilotListHeaderProps> = ({ onAddPilot, isAdmin =
         <h1 className="text-2xl font-bold">Pilot Management</h1>
         <p className="text-muted-foreground">
           {isAdmin 
-            ? "Manage all registered pilots in the system (10 records available)"
+            ? `Manage all registered pilots in the system (${mockPilots.length} records available)`
             : "Manage your pilot information and certifications"}
         </p>
       </div>
