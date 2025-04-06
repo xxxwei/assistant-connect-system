@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { Card } from 'antd';
-import { mockUsers } from '../types/user';
+import { mockUsers, formatDate } from '../types/user';
 import UserListHeader from '../components/users/UserListHeader';
 import UserFilters from '../components/users/UserFilters';
 import UserTable from '../components/users/UserTable';
@@ -11,19 +11,25 @@ const UserList = () => {
   const [searchText, setSearchText] = useState('');
   const [userType, setUserType] = useState('all');
   const [status, setStatus] = useState('all');
+  const [activated, setActivated] = useState('all');
+  const [maacMember, setMaacMember] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 5;
+  const pageSize = 10;
 
   // Filter users based on search and filters
   const filteredUsers = mockUsers.filter(user => {
+    const fullName = `${user.firstname} ${user.lastname}`.toLowerCase();
+    
     const matchesSearch = searchText === '' || 
-      user.name.toLowerCase().includes(searchText.toLowerCase()) || 
+      fullName.includes(searchText.toLowerCase()) || 
       user.email.toLowerCase().includes(searchText.toLowerCase());
     
     const matchesType = userType === 'all' || user.type === userType;
     const matchesStatus = status === 'all' || user.status === status;
+    const matchesActivated = activated === 'all' || user.activated === (activated === 'true');
+    const matchesMaac = maacMember === 'all' || user.maac_member === (maacMember === 'true');
     
-    return matchesSearch && matchesType && matchesStatus;
+    return matchesSearch && matchesType && matchesStatus && matchesActivated && matchesMaac;
   });
 
   // Paginate the filtered users
@@ -44,6 +50,8 @@ const UserList = () => {
     setSearchText('');
     setUserType('all');
     setStatus('all');
+    setActivated('all');
+    setMaacMember('all');
     setCurrentPage(1);
   };
 
@@ -59,6 +67,10 @@ const UserList = () => {
         setUserType={setUserType}
         status={status}
         setStatus={setStatus}
+        activated={activated}
+        setActivated={setActivated}
+        maacMember={maacMember}
+        setMaacMember={setMaacMember}
         handleSearch={handleSearch}
         handleReset={handleReset}
       />

@@ -1,99 +1,42 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Button, Card, Input, Select, Divider, Form, message, Empty, Spin } from 'antd';
-import { ArrowLeftIcon, Edit2Icon, BadgeIcon, Save, X } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Badge as BadgeType, UserWithBadges } from '@/types/badge';
-
-// Mock user data (would come from an API in a real app)
-const mockUsers = [
-  { 
-    id: 1, 
-    name: 'John Doe', 
-    email: 'john.doe@example.com', 
-    department: 'Customer Service',
-    role: 'admin',
-    badges: [
-      { id: 1, badge_type: 1, badge_name: 'Customer Service Excellence', description: 'Awarded for exceptional customer service', image_url: '/placeholder.svg', created_at: '2023-05-15', distributed_count: 15 },
-      { id: 3, badge_type: 2, badge_name: 'Team Player', description: 'Awarded for excellent teamwork', image_url: '/placeholder.svg', created_at: '2023-07-10', distributed_count: 8 }
-    ]
-  },
-  { 
-    id: 2, 
-    name: 'Jane Smith', 
-    email: 'jane.smith@example.com', 
-    department: 'Sales',
-    role: 'agent',
-    badges: [
-      { id: 2, badge_type: 3, badge_name: 'Sales Champion', description: 'Achieved outstanding sales results', image_url: '/placeholder.svg', created_at: '2023-06-20', distributed_count: 5 }
-    ]
-  },
-  { 
-    id: 3, 
-    name: 'Robert Johnson', 
-    email: 'robert.j@example.com', 
-    department: 'Technical Support',
-    role: 'agent',
-    badges: [] 
-  },
-];
+import { Card, Divider, Form, Spin } from 'antd';
+import { ArrowLeftIcon, BadgeCheck, CheckCircle2, XCircle, MapPin, Package } from 'lucide-react';
+import { mockUsers, formatDate } from '@/types/user';
+import { mockReviewPackages } from '@/types/reviewPackage';
+import { mockReviewAddresses } from '@/types/reviewAddress';
+import { Button } from '@/components/ui/button';
 
 const UserDetails = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [user, setUser] = useState<UserWithBadges | null>(null);
+  const [user, setUser] = useState<any>(null);
+  const [userPackages, setUserPackages] = useState<any[]>([]);
+  const [userAddresses, setUserAddresses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [editing, setEditing] = useState(false);
-  const [form] = Form.useForm();
-  const [selectedBadge, setSelectedBadge] = useState<BadgeType | null>(null);
-  const [badgeDialogOpen, setBadgeDialogOpen] = useState(false);
-  
+
   // Fetch user data
   useEffect(() => {
     // Simulate API call
     setLoading(true);
     setTimeout(() => {
-      const foundUser = mockUsers.find(u => u.id === Number(id));
+      const foundUser = mockUsers.find(u => u.id === id);
       if (foundUser) {
         setUser(foundUser);
-        form.setFieldsValue(foundUser);
+
+        // If user is a reviewer, get packages and addresses
+        if (foundUser.type === 'flight_reviewer') {
+          const packages = mockReviewPackages.filter(p => p.reviewer_id === id);
+          setUserPackages(packages);
+          
+          const addresses = mockReviewAddresses.filter(a => a.reviewer_id === id);
+          setUserAddresses(addresses);
+        }
       }
       setLoading(false);
-    }, 500);
-  }, [id, form]);
-
-  // Handle form submission
-  const handleSubmit = (values: any) => {
-    // In a real app, this would be an API call
-    setUser(prev => {
-      if (!prev) return null;
-      return { ...prev, ...values };
-    });
-    setEditing(false);
-    message.success('User information updated successfully');
-  };
-
-  // Handle cancel edit
-  const handleCancel = () => {
-    if (user) {
-      form.setFieldsValue(user);
-    }
-    setEditing(false);
-  };
-
-  // Handle badge click
-  const handleBadgeClick = (badge: BadgeType) => {
-    setSelectedBadge(badge);
-    setBadgeDialogOpen(true);
-  };
+    }, 300);
+  }, [id]);
 
   if (loading) {
     return (
@@ -107,208 +50,326 @@ const UserDetails = () => {
     return (
       <div className="p-6">
         <div className="flex items-center mb-6">
-          <Button 
-            icon={<ArrowLeftIcon className="h-4 w-4" />} 
+          <Button
+            variant="outline"
+            size="sm"
             onClick={() => navigate('/users')}
             className="mr-4"
           >
+            <ArrowLeftIcon className="h-4 w-4 mr-2" />
             Back to Users
           </Button>
           <h1 className="text-2xl font-light">User Not Found</h1>
         </div>
         <Card>
-          <Empty description="The requested user could not be found" />
+          <div className="text-center py-8">
+            <p>The requested user could not be found</p>
+          </div>
         </Card>
       </div>
     );
   }
+
+  const isReviewer = user.type === 'flight_reviewer';
 
   return (
     <div className="p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center">
-          <Button 
-            icon={<ArrowLeftIcon className="h-4 w-4" />} 
+          <Button
+            variant="outline"
+            size="sm"
             onClick={() => navigate('/users')}
             className="mr-4"
           >
+            <ArrowLeftIcon className="h-4 w-4 mr-2" />
             Back to Users
           </Button>
           <h1 className="text-2xl font-light">User Details</h1>
-        </div>
-        {!editing ? (
-          <Button 
-            type="primary" 
-            icon={<Edit2Icon className="h-4 w-4" />} 
-            onClick={() => setEditing(true)}
-          >
-            Edit User
-          </Button>
-        ) : (
-          <div className="flex space-x-2">
-            <Button 
-              icon={<X className="h-4 w-4" />} 
-              onClick={handleCancel}
-            >
-              Cancel
-            </Button>
-            <Button 
-              type="primary" 
-              icon={<Save className="h-4 w-4" />} 
-              onClick={() => form.submit()}
-            >
-              Save Changes
-            </Button>
-          </div>
-        )}
-      </div>
-
-      {/* User Information */}
-      <Card className="mb-6 shadow-sm">
-        <Form
-          form={form}
-          layout="vertical"
-          disabled={!editing}
-          onFinish={handleSubmit}
-        >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Form.Item
-              name="name"
-              label="Full Name"
-              rules={[{ required: true, message: 'Please enter the user name' }]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name="email"
-              label="Email Address"
-              rules={[
-                { required: true, message: 'Please enter the email address' },
-                { type: 'email', message: 'Please enter a valid email address' }
-              ]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name="department"
-              label="Department"
-              rules={[{ required: true, message: 'Please select a department' }]}
-            >
-              <Select
-                options={[
-                  { value: 'Customer Service', label: 'Customer Service' },
-                  { value: 'Sales', label: 'Sales' },
-                  { value: 'Technical Support', label: 'Technical Support' },
-                  { value: 'Marketing', label: 'Marketing' },
-                  { value: 'Human Resources', label: 'Human Resources' },
-                ]}
-              />
-            </Form.Item>
-            <Form.Item
-              name="role"
-              label="User Role"
-              rules={[{ required: true, message: 'Please select a role' }]}
-            >
-              <Select
-                options={[
-                  { value: 'admin', label: 'Admin' },
-                  { value: 'supervisor', label: 'Supervisor' },
-                  { value: 'agent', label: 'Agent' },
-                ]}
-              />
-            </Form.Item>
-          </div>
-        </Form>
-      </Card>
-
-      {/* User Badges */}
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-xl font-light flex items-center">
-          <BadgeIcon className="mr-2 h-5 w-5" />
-          Badges
-        </h2>
-      </div>
-      
-      <Card className="shadow-sm">
-        {user.badges.length === 0 ? (
-          <Empty 
-            description="This user hasn't earned any badges yet" 
-            image={Empty.PRESENTED_IMAGE_SIMPLE}
-          />
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {user.badges.map(badge => (
-              <Card 
-                key={badge.id}
-                className="cursor-pointer hover:shadow-md transition-shadow"
-                onClick={() => handleBadgeClick(badge)}
-              >
-                <div className="flex items-center">
-                  <div className="w-12 h-12 mr-4 flex items-center justify-center bg-gray-100 rounded-full overflow-hidden">
-                    <img 
-                      src={badge.image_url} 
-                      alt={badge.badge_name}
-                      className="w-8 h-8 object-contain" 
-                    />
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-base">{badge.badge_name}</h3>
-                    <Badge 
-                      variant={badge.badge_type === 1 ? "default" : 
-                              badge.badge_type === 2 ? "secondary" : "outline"}
-                    >
-                      {badge.badge_type === 1 ? "Gold" : 
-                       badge.badge_type === 2 ? "Silver" : "Bronze"}
-                    </Badge>
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
-        )}
-      </Card>
-
-      {/* Badge Details Dialog */}
-      <Dialog open={badgeDialogOpen} onOpenChange={setBadgeDialogOpen}>
-        <DialogContent>
-          {selectedBadge && (
-            <>
-              <DialogHeader>
-                <DialogTitle>{selectedBadge.badge_name}</DialogTitle>
-                <DialogDescription>
-                  Awarded on {new Date(selectedBadge.created_at).toLocaleDateString()}
-                </DialogDescription>
-              </DialogHeader>
-              
-              <div className="flex flex-col items-center my-4">
-                <div className="w-20 h-20 mb-4 flex items-center justify-center bg-gray-100 rounded-full overflow-hidden">
-                  <img 
-                    src={selectedBadge.image_url} 
-                    alt={selectedBadge.badge_name}
-                    className="w-16 h-16 object-contain" 
-                  />
-                </div>
-                <Badge 
-                  variant={selectedBadge.badge_type === 1 ? "default" : 
-                          selectedBadge.badge_type === 2 ? "secondary" : "outline"}
-                  className="mb-2"
-                >
-                  {selectedBadge.badge_type === 1 ? "Gold" : 
-                   selectedBadge.badge_type === 2 ? "Silver" : "Bronze"}
-                </Badge>
-              </div>
-              
-              <Divider />
-              
-              <div>
-                <h3 className="text-sm font-medium mb-2">Description</h3>
-                <p className="text-gray-600">{selectedBadge.description}</p>
-              </div>
-            </>
+          {isReviewer && (
+            <div className="ml-3 flex items-center">
+              <BadgeCheck className="h-5 w-5 text-blue-500 mr-1" />
+              <span className="text-blue-500 text-sm font-medium">Flight Reviewer</span>
+            </div>
           )}
-        </DialogContent>
-      </Dialog>
+        </div>
+      </div>
+
+      {/* User Base Information */}
+      <Card className="mb-6 shadow-sm">
+        <h2 className="text-xl font-medium mb-4">User Information</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-500">User ID</label>
+            <p className="mt-1">{user.id}</p>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-500">First Name</label>
+            <p className="mt-1">{user.firstname}</p>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-500">Last Name</label>
+            <p className="mt-1">{user.lastname}</p>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-500">Email</label>
+            <p className="mt-1">{user.email}</p>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-500">Phone</label>
+            <p className="mt-1">{user.phone || 'N/A'}</p>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-500">User Type</label>
+            <p className="mt-1">
+              {user.type.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+            </p>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-500">Status</label>
+            <p className="mt-1 capitalize">{user.status}</p>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-500">Activated</label>
+            <p className="mt-1 flex items-center">
+              {user.activated ? (
+                <>
+                  <CheckCircle2 className="h-4 w-4 text-green-500 mr-2" />
+                  <span>Yes</span>
+                </>
+              ) : (
+                <>
+                  <XCircle className="h-4 w-4 text-red-500 mr-2" />
+                  <span>No</span>
+                </>
+              )}
+            </p>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-500">MAAC Member</label>
+            <p className="mt-1 flex items-center">
+              {user.maac_member ? (
+                <>
+                  <CheckCircle2 className="h-4 w-4 text-green-500 mr-2" />
+                  <span>Yes</span>
+                </>
+              ) : (
+                <>
+                  <XCircle className="h-4 w-4 text-red-500 mr-2" />
+                  <span>No</span>
+                </>
+              )}
+            </p>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-500">Registered On</label>
+            <p className="mt-1">{formatDate(user.registered_on)}</p>
+          </div>
+          {user.loggedOn && (
+            <div>
+              <label className="block text-sm font-medium text-gray-500">Last Login</label>
+              <p className="mt-1">{formatDate(user.loggedOn, true)}</p>
+            </div>
+          )}
+          {user.locale && (
+            <div>
+              <label className="block text-sm font-medium text-gray-500">Locale</label>
+              <p className="mt-1">{user.locale}</p>
+            </div>
+          )}
+        </div>
+
+        {(user.street || user.city || user.province || user.postalcode) && (
+          <>
+            <Divider />
+            <h3 className="text-lg font-medium mb-4">Address Information</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {user.street && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-500">Street</label>
+                  <p className="mt-1">{user.street}</p>
+                </div>
+              )}
+              {user.city && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-500">City</label>
+                  <p className="mt-1">{user.city}</p>
+                </div>
+              )}
+              {user.province && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-500">Province</label>
+                  <p className="mt-1">{user.province}</p>
+                </div>
+              )}
+              {user.postalcode && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-500">Postal Code</label>
+                  <p className="mt-1">{user.postalcode}</p>
+                </div>
+              )}
+            </div>
+          </>
+        )}
+
+        {(user.card_brand || user.card_last4 || user.plan_type || user.plan_freq) && (
+          <>
+            <Divider />
+            <h3 className="text-lg font-medium mb-4">Payment Information</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {(user.card_brand || user.card_last4) && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-500">Card Information</label>
+                  <p className="mt-1">
+                    {user.card_brand} **** **** **** {user.card_last4}
+                  </p>
+                </div>
+              )}
+              {user.plan_type && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-500">Plan Type</label>
+                  <p className="mt-1 capitalize">{user.plan_type}</p>
+                </div>
+              )}
+              {user.plan_freq && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-500">Plan Frequency</label>
+                  <p className="mt-1 capitalize">{user.plan_freq}</p>
+                </div>
+              )}
+              {user.cancelled !== undefined && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-500">Cancelled</label>
+                  <p className="mt-1 flex items-center">
+                    {user.cancelled ? (
+                      <>
+                        <CheckCircle2 className="h-4 w-4 text-red-500 mr-2" />
+                        <span>Yes</span>
+                      </>
+                    ) : (
+                      <>
+                        <XCircle className="h-4 w-4 text-green-500 mr-2" />
+                        <span>No</span>
+                      </>
+                    )}
+                  </p>
+                </div>
+              )}
+              {user.stripe_user_id && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-500">Stripe User ID</label>
+                  <p className="mt-1">{user.stripe_user_id}</p>
+                </div>
+              )}
+            </div>
+          </>
+        )}
+      </Card>
+
+      {/* Review Packages Section (if user is a reviewer) */}
+      {isReviewer && (
+        <Card className="mb-6 shadow-sm">
+          <div className="flex items-center mb-4">
+            <Package className="h-5 w-5 mr-2" />
+            <h2 className="text-xl font-medium">Review Packages</h2>
+          </div>
+          
+          {userPackages.length === 0 ? (
+            <p className="text-gray-500">This reviewer has no packages.</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {userPackages.map(pkg => (
+                    <tr key={pkg.id}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{pkg.id}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{pkg.title}</td>
+                      <td className="px-6 py-4 text-sm text-gray-500">{pkg.description.length > 50 ? `${pkg.description.substring(0, 50)}...` : pkg.description}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${(pkg.price / 100).toFixed(2)}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 capitalize">{pkg.package_type}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {pkg.enabled ? (
+                          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                            Active
+                          </span>
+                        ) : (
+                          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                            Inactive
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </Card>
+      )}
+
+      {/* Review Addresses Section (if user is a reviewer) */}
+      {isReviewer && (
+        <Card className="mb-6 shadow-sm">
+          <div className="flex items-center mb-4">
+            <MapPin className="h-5 w-5 mr-2" />
+            <h2 className="text-xl font-medium">Review Addresses</h2>
+          </div>
+          
+          {userAddresses.length === 0 ? (
+            <p className="text-gray-500">This reviewer has no addresses.</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Address</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Postal Code</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Province</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">City</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {userAddresses.map(address => (
+                    <tr key={address.id}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{address.id}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {address.address_customized || address.street || address.review_street || 'N/A'}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{address.postal_code}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{address.province}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{address.city}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {address.enabled ? (
+                          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                            Active
+                          </span>
+                        ) : (
+                          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                            Inactive
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </Card>
+      )}
     </div>
   );
 };

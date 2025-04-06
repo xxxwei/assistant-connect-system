@@ -86,6 +86,22 @@ const App = () => {
                   </MainLayout>
                 </ProtectedRoute>
               } />
+
+              <Route path="/admin/users" element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <UserList />
+                  </MainLayout>
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/admin/users/:id" element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <UserDetails />
+                  </MainLayout>
+                </ProtectedRoute>
+              } />
               
               <Route path="/profile/:id" element={
                 <ProtectedRoute>

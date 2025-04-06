@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Button, Tag } from 'antd';
+import { Button } from 'antd';
 import { EyeOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import { 
@@ -11,7 +11,9 @@ import {
   TableRow,
   TableCell
 } from "@/components/ui/table";
-import { User } from '../../types/user';
+import { User, formatDate } from '../../types/user';
+import { Badge } from '@/components/ui/badge';
+import { CheckCircle2, XCircle, BadgeCheck } from 'lucide-react';
 
 interface UserTableProps {
   users: User[];
@@ -25,15 +27,18 @@ const UserTable: React.FC<UserTableProps> = ({ users }) => {
           <TableHead className="w-[50px]">ID</TableHead>
           <TableHead>Name</TableHead>
           <TableHead>Email</TableHead>
+          <TableHead>Phone</TableHead>
           <TableHead>User Type</TableHead>
-          <TableHead>Status</TableHead>
+          <TableHead>Activated</TableHead>
+          <TableHead>MAAC Member</TableHead>
+          <TableHead>Registered On</TableHead>
           <TableHead className="text-right">Actions</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {users.length === 0 ? (
           <TableRow>
-            <TableCell colSpan={6} className="text-center py-8">
+            <TableCell colSpan={9} className="text-center py-8">
               No users found matching your search criteria
             </TableCell>
           </TableRow>
@@ -41,25 +46,47 @@ const UserTable: React.FC<UserTableProps> = ({ users }) => {
           users.map((user) => (
             <TableRow key={user.id}>
               <TableCell>{user.id}</TableCell>
-              <TableCell className="font-medium">{user.name}</TableCell>
+              <TableCell className="font-medium">
+                {user.firstname} {user.lastname}
+              </TableCell>
               <TableCell>{user.email}</TableCell>
+              <TableCell>{user.phone || 'N/A'}</TableCell>
               <TableCell>
-                <Tag 
-                  color={
-                    user.type === 'admin' ? 'blue' : 
-                    user.type === 'supervisor' ? 'purple' : 
-                    'green'
-                  }
-                >
-                  {user.type.charAt(0).toUpperCase() + user.type.slice(1)}
-                </Tag>
+                <div className="flex items-center gap-1">
+                  {user.type === 'flight_reviewer' && (
+                    <BadgeCheck className="h-4 w-4 text-blue-500 mr-1" />
+                  )}
+                  <Badge 
+                    variant={
+                      user.type === 'admin' ? 'default' : 
+                      user.type === 'supervisor' ? 'secondary' : 
+                      user.type === 'flight_reviewer' ? 'outline' : 
+                      'destructive'
+                    }
+                    className={
+                      user.type === 'basic_user' ? 'bg-green-100 text-green-800 hover:bg-green-100' : ''
+                    }
+                  >
+                    {user.type.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+                  </Badge>
+                </div>
               </TableCell>
               <TableCell>
-                <Tag 
-                  color={user.status === 'active' ? 'success' : 'error'}
-                >
-                  {user.status.charAt(0).toUpperCase() + user.status.slice(1)}
-                </Tag>
+                {user.activated ? (
+                  <CheckCircle2 className="h-5 w-5 text-green-500" />
+                ) : (
+                  <XCircle className="h-5 w-5 text-red-500" />
+                )}
+              </TableCell>
+              <TableCell>
+                {user.maac_member ? (
+                  <CheckCircle2 className="h-5 w-5 text-green-500" />
+                ) : (
+                  <XCircle className="h-5 w-5 text-red-500" />
+                )}
+              </TableCell>
+              <TableCell>
+                {formatDate(user.registered_on)}
               </TableCell>
               <TableCell className="text-right">
                 <Link to={`/users/${user.id}`}>
